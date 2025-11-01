@@ -87,23 +87,6 @@
             gap: 20px;
         }
 
-        /* Notifications styling */
-        .notifications {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .notification-count {
-            position: absolute;
-            top: -5px;
-            right: -8px;
-            background: var(--danger-color);
-            color: #fff;
-            font-size: 0.7em;
-            padding: 2px 5px;
-            border-radius: 50%;
-        }
-
         /* CSS-only dropdown for profile */
         .profile-dropdown {
             position: relative;
@@ -438,10 +421,6 @@
             <a href="#" class="logo">College ERP</a>
         </div>
         <div class="navbar-right">
-            <div class="notifications">
-                <i class="fas fa-bell"></i>
-                <span class="notification-count">3</span>
-            </div>
             <a href="admin-login.html" class="logout-btn">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </a>
@@ -478,26 +457,10 @@
                 </ul>
             </li>
             
-            <li><a href="timetable.html"><i class="fas fa-calendar"></i> View Timetable</a></li>
+            <li><a href="admin-timetable.html"><i class="fas fa-calendar"></i> Manage Timetable</a></li>
             
-            <li class="dropdown">
-                <a href="#"><i class="fas fa-clipboard-check"></i> Attendance <i class="fas fa-chevron-down arrow"></i></a>
-                <ul class="dropdown-menu">
-                    <li><a href="mark-attendance.html">Mark Attendance</a></li>
-                    <li><a href="attendance-reports.html">View Reports</a></li>
-                </ul>
-            </li>
-            
-            <li class="dropdown">
-                <a href="#"><i class="fas fa-chart-line"></i> Marks <i class="fas fa-chevron-down arrow"></i></a>
-                <ul class="dropdown-menu">
-                    <li><a href="enter-marks.html">Enter Marks</a></li>
-                    <li><a href="view-marks.html">View Marks</a></li>
-                </ul>
-            </li>
-            
-            <li><a href="notifications.html"><i class="fas fa-paper-plane"></i> Send Notifications</a></li>
-            <li><a href="complaints.html"><i class="fas fa-exclamation-triangle"></i> Complaints</a></li>
+            <li><a href="admin-notifications.html"><i class="fas fa-paper-plane"></i> Send Notifications</a></li>
+            <li><a href="admin-complaints.html"><i class="fas fa-exclamation-triangle"></i> Complaints</a></li>
         </ul>
     </aside>
 
@@ -531,21 +494,21 @@
             <div class="dashboard-card">
                 <h3>Quick Actions</h3>
                 <div class="quick-actions">
-                    <a href="add-student.html" class="action-btn">
+                    <a href="admin-add-student.html" class="action-btn">
                         <i class="fas fa-user-plus"></i>
                         <span>Add Student</span>
                     </a>
-                    <a href="add-faculty.html" class="action-btn">
+                    <a href="admin-add-faculty.html" class="action-btn">
                         <i class="fas fa-user-tie"></i>
                         <span>Add Faculty</span>
                     </a>
-                    <a href="add-course.html" class="action-btn">
+                    <a href="admin-add-course.html" class="action-btn">
                         <i class="fas fa-book-medical"></i>
                         <span>Add Course</span>
                     </a>
-                    <a href="schedule.html" class="action-btn">
+                    <a href="admin-courses.html" class="action-btn">
                         <i class="fas fa-calendar-plus"></i>
-                        <span>Schedule Class</span>
+                        <span>View Courses</span>
                     </a>
                 </div>
             </div>
@@ -553,8 +516,6 @@
             <div class="dashboard-card">
                 <h3>Recent Activities</h3>
                 <div class="activity-list">
-                    <div class="activity-item">
-                      
                     <div class="activity-item">
                         <div class="activity-icon green"><i class="fas fa-file-alt"></i></div>
                         <div class="activity-content">

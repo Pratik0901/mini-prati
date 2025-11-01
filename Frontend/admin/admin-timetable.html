@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timetable Management | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --dark: #1c1c1c;
+            --card: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--dark); color: #fff; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1600px; margin: 0 auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 20px; background: var(--card); border-radius: 12px; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+
+        .controls { display: flex; gap: 15px; margin-bottom: 25px; padding: 20px; background: var(--card); border-radius: 12px; flex-wrap: wrap; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        .control-group label { font-size: 0.9em; opacity: 0.8; }
+        .control-group select {
+            padding: 10px 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 35px;
+        }
+        .control-group select:hover {
+            background-color: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+        }
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .control-group select option,
+        .form-control option {
+            background: var(--dark);
+            color: white;
+            padding: 10px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+        select.form-control:hover {
+            background-color: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+        }
+
+        /* Timetable Grid */
+        .timetable-grid { display: grid; grid-template-columns: 100px repeat(6, 1fr); gap: 1px; background: #333; border: 1px solid #333; border-radius: 8px; overflow: hidden; margin-bottom: 30px; }
+        .cell { background: var(--card); padding: 12px; min-height: 60px; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .cell.header { background: rgba(52, 152, 219, 0.2); font-weight: 600; }
+        .cell.time { background: rgba(255,255,255,0.03); font-size: 0.85em; }
+        .cell.class { background: rgba(46, 204, 113, 0.1); border-left: 3px solid var(--secondary); cursor: pointer; flex-direction: column; gap: 5px; }
+        .cell.class:hover { background: rgba(46, 204, 113, 0.2); }
+        .class-name { font-weight: 600; font-size: 0.9em; }
+        .class-room { font-size: 0.75em; opacity: 0.7; }
+
+        /* Add Class Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: var(--dark); padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; border: 1px solid rgba(255,255,255,0.1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: var(--primary); }
+        .close-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; background: rgba(255,255,255,0.05); color: white; }
+
+        @media (max-width: 1024px) {
+            .timetable-grid { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>📅 Timetable Management</h1>
+                <p>Create and manage timetables for faculty and students</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="admin-dashboard.html" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <button class="btn btn-primary" onclick="openModal()">
+                    <i class="fas fa-plus"></i> Add Class
+                </button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>View Type</label>
+                <select id="viewType" onchange="switchView()">
+                    <option value="faculty">Faculty Timetable</option>
+                    <option value="student">Student Timetable</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label id="selectionLabel">Select Faculty</label>
+                <select id="selection">
+                    <option value="">Choose...</option>
+                    <option value="prof1">Prof. Anil Kumar (CS)</option>
+                    <option value="prof2">Prof. Priya Sharma (CS)</option>
+                    <option value="prof3">Prof. Rajesh Gupta (IT)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Semester</label>
+                <select>
+                    <option>Odd Semester 2024</option>
+                    <option>Even Semester 2024</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <button class="btn btn-primary">Load Timetable</button>
+            </div>
+        </div>
+
+        <!-- Timetable Grid -->
+        <div class="timetable-grid">
+            <!-- Header Row -->
+            <div class="cell header">Day/Time</div>
+            <div class="cell header">09:00-10:00</div>
+            <div class="cell header">10:00-11:00</div>
+            <div class="cell header">11:00-12:00</div>
+            <div class="cell header">12:00-01:00</div>
+            <div class="cell header">02:00-03:00</div>
+            <div class="cell header">03:00-04:00</div>
+
+            <!-- Monday -->
+            <div class="cell time">Monday</div>
+            <div class="cell class" onclick="editClass('mon-1')">
+                <div class="class-name">Web Tech (CS301)</div>
+                <div class="class-room">📍 Room 101</div>
+            </div>
+            <div class="cell class" onclick="editClass('mon-2')">
+                <div class="class-name">DAA (CS302)</div>
+                <div class="class-room">📍 Room 102</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell" style="background: rgba(230, 126, 34, 0.1);">🍽️ LUNCH</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- Tuesday -->
+            <div class="cell time">Tuesday</div>
+            <div class="cell"></div>
+            <div class="cell class">
+                <div class="class-name">Web Tech (CS301)</div>
+                <div class="class-room">📍 Room 101</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell" style="background: rgba(230, 126, 34, 0.1);">🍽️ LUNCH</div>
+            <div class="cell class">
+                <div class="class-name">Web Tech Lab</div>
+                <div class="class-room">📍 Lab 202</div>
+            </div>
+            <div class="cell class">
+                <div class="class-name">Web Tech Lab</div>
+                <div class="class-room">📍 Lab 202</div>
+            </div>
+
+            <!-- Wednesday -->
+            <div class="cell time">Wednesday</div>
+            <div class="cell class">
+                <div class="class-name">DAA (CS302)</div>
+                <div class="class-room">📍 Room 102</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell class">
+                <div class="class-name">DAA (CS302)</div>
+                <div class="class-room">📍 Room 102</div>
+            </div>
+            <div class="cell" style="background: rgba(230, 126, 34, 0.1);">🍽️ LUNCH</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+
+            <!-- Thursday -->
+            <div class="cell time">Thursday</div>
+            <div class="cell"></div>
+            <div class="cell class">
+                <div class="class-name">DAA (CS302)</div>
+                <div class="class-room">📍 Room 102</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell" style="background: rgba(230, 126, 34, 0.1);">🍽️ LUNCH</div>
+            <div class="cell class">
+                <div class="class-name">DAA Lab</div>
+                <div class="class-room">📍 Lab 203</div>
+            </div>
+            <div class="cell class">
+                <div class="class-name">DAA Lab</div>
+                <div class="class-room">📍 Lab 203</div>
+            </div>
+
+            <!-- Friday -->
+            <div class="cell time">Friday</div>
+            <div class="cell class">
+                <div class="class-name">Web Tech (CS301)</div>
+                <div class="class-room">📍 Room 101</div>
+            </div>
+            <div class="cell class">
+                <div class="class-name">Web Tech (CS301)</div>
+                <div class="class-room">📍 Room 101</div>
+            </div>
+            <div class="cell"></div>
+            <div class="cell" style="background: rgba(230, 126, 34, 0.1);">🍽️ LUNCH</div>
+            <div class="cell"></div>
+            <div class="cell"></div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ Add Class</h3>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <form onsubmit="saveClass(event)">
+                <div class="form-group">
+                    <label>Course</label>
+                    <select class="form-control" required>
+                        <option value="">Select Course</option>
+                        <option>Web Technologies (CS301)</option>
+                        <option>DAA (CS302)</option>
+                        <option>SEPM (CS303)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Faculty</label>
+                    <select class="form-control" required>
+                        <option value="">Select Faculty</option>
+                        <option>Prof. Anil Kumar</option>
+                        <option>Prof. Priya Sharma</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Day</label>
+                    <select class="form-control" required>
+                        <option>Monday</option>
+                        <option>Tuesday</option>
+                        <option>Wednesday</option>
+                        <option>Thursday</option>
+                        <option>Friday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Time Slot</label>
+                    <select class="form-control" required>
+                        <option>09:00 - 10:00</option>
+                        <option>10:00 - 11:00</option>
+                        <option>11:00 - 12:00</option>
+                        <option>02:00 - 03:00</option>
+                        <option>03:00 - 04:00</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Room</label>
+                    <input type="text" class="form-control" placeholder="e.g., Room 101" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('classModal').classList.remove('active');
+        }
+
+        function editClass(id) {
+            openModal();
+        }
+
+        function saveClass(event) {
+            event.preventDefault();
+            alert('✅ Class added to timetable!');
+            closeModal();
+        }
+
+        function switchView() {
+            const viewType = document.getElementById('viewType').value;
+            const label = document.getElementById('selectionLabel');
+            const select = document.getElementById('selection');
+            
+            if (viewType === 'student') {
+                label.textContent = 'Select Class/Year';
+                select.innerHTML = `
+                    <option value="">Choose...</option>
+                    <option>1st Year - Section A</option>
+                    <option>2nd Year - Section A</option>
+                    <option>3rd Year - CS Dept</option>
+                    <option>4th Year - CS Dept</option>
+                `;
+            } else {
+                label.textContent = 'Select Faculty';
+                select.innerHTML = `
+                    <option value="">Choose...</option>
+                    <option>Prof. Anil Kumar (CS)</option>
+                    <option>Prof. Priya Sharma (CS)</option>
+                    <option>Prof. Rajesh Gupta (IT)</option>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

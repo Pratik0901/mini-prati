@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #e67e22;
+            --dark: #1c1c1c;
+            --darker: #111;
+            --card: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--dark); color: #fff; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 20px; background: var(--card); border-radius: 12px; }
+        .page-header h1 { font-size: 2em; }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .btn-secondary { background: var(--secondary); color: white; }
+
+        .notification-layout { display: grid; grid-template-columns: 1fr 400px; gap: 25px; }
+
+        /* Compose Form */
+        .compose-card { background: var(--card); border-radius: 12px; padding: 25px; }
+        .compose-card h3 { margin-bottom: 20px; color: var(--primary); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 35px;
+        }
+
+        select.form-control:hover {
+            background-color: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+        }
+
+        select.form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        select.form-control option {
+            background: var(--dark);
+            color: white;
+            padding: 10px;
+        }
+
+        .recipient-type { display: flex; gap: 10px; margin-bottom: 15px; }
+        .recipient-option { flex: 1; padding: 12px; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .recipient-option.selected { border-color: var(--primary); background: rgba(52, 152, 219, 0.1); }
+        .recipient-option input { display: none; }
+
+        .send-btn { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .send-btn:hover { background: #2980b9; }
+
+        /* Sent Notifications */
+        .sent-notifications { background: var(--card); border-radius: 12px; padding: 25px; }
+        .sent-notifications h3 { margin-bottom: 20px; }
+        .notification-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--primary); }
+        .notification-item h4 { margin-bottom: 8px; }
+        .notification-meta { display: flex; gap: 15px; font-size: 0.85em; opacity: 0.7; margin-top: 10px; }
+
+        @media (max-width: 1024px) {
+            .notification-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>📢 Send Notifications</h1>
+                <p>Communicate with faculty and students</p>
+            </div>
+            <a href="admin-dashboard.html" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="notification-layout">
+            <!-- Compose Form -->
+            <div class="compose-card">
+                <h3>✉️ Compose New Notification</h3>
+                <form onsubmit="sendNotification(event)">
+                    <div class="form-group">
+                        <label>Recipient Type</label>
+                        <div class="recipient-type">
+                            <label class="recipient-option selected">
+                                <input type="radio" name="recipientType" value="students" checked onchange="updateRecipients()">
+                                <div>👨‍🎓 Students</div>
+                            </label>
+                            <label class="recipient-option">
+                                <input type="radio" name="recipientType" value="faculty" onchange="updateRecipients()">
+                                <div>👩‍🏫 Faculty</div>
+                            </label>
+                            <label class="recipient-option">
+                                <input type="radio" name="recipientType" value="all" onchange="updateRecipients()">
+                                <div>👥 All Users</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Recipients</label>
+                        <select class="form-control" id="recipients" required>
+                            <option value="">Choose...</option>
+                            <optgroup label="By Year" id="yearGroup">
+                                <option value="year1">1st Year Students</option>
+                                <option value="year2">2nd Year Students</option>
+                                <option value="year3">3rd Year Students</option>
+                                <option value="year4">4th Year Students</option>
+                            </optgroup>
+                            <optgroup label="By Department">
+                                <option value="cs">Computer Science</option>
+                                <option value="it">Information Technology</option>
+                                <option value="ece">ECE</option>
+                            </optgroup>
+                            <optgroup label="Special">
+                                <option value="all_students">All Students</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" class="form-control" placeholder="Notification subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="form-control" placeholder="Type your message here..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select class="form-control" required>
+                            <option value="low">Low</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="send-btn">
+                        📨 Send Notification
+                    </button>
+                </form>
+            </div>
+
+            <!-- Sent Notifications History -->
+            <div class="sent-notifications">
+                <h3>📤 Recently Sent</h3>
+                <div class="notification-item">
+                    <h4>Mid-Semester Exam Schedule</h4>
+                    <p>Exam dates have been published. Check your dashboard for details.</p>
+                    <div class="notification-meta">
+                        <span>👥 All Students</span>
+                        <span>🕒 2 hours ago</span>
+                        <span>✓ 1,245 delivered</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <h4>Faculty Meeting Reminder</h4>
+                    <p>Department heads meeting tomorrow at 10 AM.</p>
+                    <div class="notification-meta">
+                        <span>👨‍🏫 All Faculty</span>
+                        <span>🕒 5 hours ago</span>
+                        <span>✓ 87 delivered</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateRecipients() {
+            const type = document.querySelector('input[name="recipientType"]:checked').value;
+            const select = document.getElementById('recipients');
+            
+            // Update visual selection
+            document.querySelectorAll('.recipient-option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.recipient-option').classList.add('selected');
+            
+            if (type === 'faculty') {
+                select.innerHTML = `
+                    <option value="">Choose...</option>
+                    <optgroup label="By Department">
+                        <option value="dept_cs">CS Department Faculty</option>
+                        <option value="dept_it">IT Department Faculty</option>
+                        <option value="dept_ece">ECE Department Faculty</option>
+                    </optgroup>
+                    <optgroup label="Special">
+                        <option value="all_faculty">All Faculty Members</option>
+                        <option value="hods">All HODs</option>
+                    </optgroup>
+                `;
+            } else if (type === 'all') {
+                select.innerHTML = `
+                    <option value="all_users">All Users (Faculty + Students)</option>
+                `;
+            } else {
+                select.innerHTML = `
+                    <option value="">Choose...</option>
+                    <optgroup label="By Year">
+                        <option value="year1">1st Year Students</option>
+                        <option value="year2">2nd Year Students</option>
+                        <option value="year3">3rd Year Students</option>
+                        <option value="year4">4th Year Students</option>
+                    </optgroup>
+                    <optgroup label="By Department">
+                        <option value="cs">Computer Science</option>
+                        <option value="it">Information Technology</option>
+                    </optgroup>
+                    <optgroup label="Special">
+                        <option value="all_students">All Students</option>
+                    </optgroup>
+                `;
+            }
+        }
+
+        function sendNotification(event) {
+            event.preventDefault();
+            alert('✅ Notification sent successfully!');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>
