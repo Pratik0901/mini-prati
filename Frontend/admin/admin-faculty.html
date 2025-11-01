@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Faculty | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ...existing CSS variables from admin-dashboard.html... */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --dark-bg: #1c1c1c;
+            --darker-bg: #111;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --hover-bg: rgba(255, 255, 255, 0.15);
+            --border-radius: 15px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .page-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+        }
+
+        .page-header h1 {
+            font-size: 2em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 12px;
+        }
+
+        .stat-info h3 {
+            font-size: 26px;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+
+        /* Filters */
+        .filters-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: black;
+            font-size: 1em;
+        }
+
+        /* Faculty Table */
+        .faculty-table-container {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            overflow-x: auto;
+        }
+
+        .faculty-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .faculty-table th,
+        .faculty-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .faculty-table th {
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .faculty-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .faculty-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .faculty-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .faculty-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .faculty-name {
+            font-weight: 600;
+        }
+
+        .faculty-id {
+            font-size: 0.85em;
+            opacity: 0.7;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--secondary-color);
+        }
+
+        .status-inactive {
+            background: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .icon-btn.view:hover {
+            background: var(--primary-color);
+        }
+
+        .icon-btn.edit:hover {
+            background: var(--warning-color);
+        }
+
+        .icon-btn.delete:hover {
+            background: var(--danger-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .filters-bar {
+                flex-direction: column;
+            }
+
+            .faculty-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1>👨‍🏫 Faculty Management</h1>
+                <p>Manage all faculty members and their information</p>
+            </div>
+            <div class="header-actions">
+                <a href="admin-dashboard.html" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <a href="admin-add-faculty.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Faculty
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="stat-info">
+                    <h3>87</h3>
+                    <p>Total Faculty</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                <div class="stat-info">
+                    <h3>82</h3>
+                    <p>Active</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3>5</h3>
+                    <p>Departments</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                <div class="stat-info">
+                    <h3>12</h3>
+                    <p>PhD Holders</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <label>Search Faculty</label>
+                <input type="text" placeholder="Search by name or ID..." id="searchInput">
+            </div>
+            <div class="filter-group">
+                <label>Department</label>
+                <select id="departmentFilter">
+                    <option value="all">All Departments</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="it">Information Technology</option>
+                    <option value="ece">ECE</option>
+                    <option value="mechanical">Mechanical</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Faculty Table -->
+        <div class="faculty-table-container">
+            <table class="faculty-table">
+                <thead>
+                    <tr>
+                        <th>Faculty</th>
+                        <th>Department</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="faculty-info">
+                                <div class="faculty-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Anil+Kumar&background=667eea&color=fff&size=90" alt="Anil Kumar">
+                                </div>
+                                <div>
+                                    <div class="faculty-name">Prof. Anil Kumar</div>
+                                    <div class="faculty-id">FAC001</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Computer Science</td>
+                        <td>anil.kumar@college.edu</td>
+                        <td>+91 98765 43210</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="icon-btn view" title="View Details" onclick="viewFaculty('FAC001')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="icon-btn edit" title="Edit" onclick="editFaculty('FAC001')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-btn delete" title="Delete" onclick="deleteFaculty('FAC001')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="faculty-info">
+                                <div class="faculty-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=ec407a&color=fff&size=90" alt="Priya Sharma">
+                                </div>
+                                <div>
+                                    <div class="faculty-name">Prof. Priya Sharma</div>
+                                    <div class="faculty-id">FAC002</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Computer Science</td>
+                        <td>priya.sharma@college.edu</td>
+                        <td>+91 98765 43211</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="icon-btn view" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="icon-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-btn delete" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="faculty-info">
+                                <div class="faculty-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Rajesh+Gupta&background=26c6da&color=fff&size=90" alt="Rajesh Gupta">
+                                </div>
+                                <div>
+                                    <div class="faculty-name">Prof. Rajesh Gupta</div>
+                                    <div class="faculty-id">FAC003</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Information Technology</td>
+                        <td>rajesh.gupta@college.edu</td>
+                        <td>+91 98765 43212</td>
+                        <td><span class="status-badge status-active">Active</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="icon-btn view" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="icon-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-btn delete" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="faculty-info">
+                                <div class="faculty-avatar">
+                                    <img src="https://ui-avatars.com/api/?name=Sunita+Verma&background=f093fb&color=fff&size=90" alt="Sunita Verma">
+                                </div>
+                                <div>
+                                    <div class="faculty-name">Prof. Sunita Verma</div>
+                                    <div class="faculty-id">FAC004</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>ECE</td>
+                        <td>sunita.verma@college.edu</td>
+                        <td>+91 98765 43213</td>
+                        <td><span class="status-badge status-inactive">Inactive</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="icon-btn view" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="icon-btn edit" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="icon-btn delete" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.faculty-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        function viewFaculty(id) {
+            window.location.href = `admin-faculty-details.html?id=${id}`;
+        }
+
+        function editFaculty(id) {
+            window.location.href = `admin-edit-faculty.html?id=${id}`;
+        }
+
+        function deleteFaculty(id) {
+            if (confirm('Are you sure you want to delete this faculty member?')) {
+                alert(`Faculty ${id} deleted successfully!`);
+                // API call to delete faculty
+            }
+        }
+    </script>
+</body>
+</html>

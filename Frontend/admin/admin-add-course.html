@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Course | Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ...existing CSS variables... */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --dark-bg: #1c1c1c;
+            --darker-bg: #111;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-radius: 15px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-header {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-header h1 {
+            font-size: 2em;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            color: black;
+            font-size: 1em;
+            transition: var(--transition);
+        }
+
+        .form-group select option {
+            background: white;
+            color: black;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .required {
+            color: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <div>
+                <h1>➕ Add New Course</h1>
+                <p>Create a new course for the curriculum</p>
+            </div>
+            <a href="admin-courses.html" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+
+        <form class="form-card" onsubmit="handleSubmit(event)">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3>📋 Basic Information</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Course Code <span class="required">*</span></label>
+                        <input type="text" name="courseCode" placeholder="e.g., CS301" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Course Name <span class="required">*</span></label>
+                        <input type="text" name="courseName" placeholder="e.g., Web Technologies" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department <span class="required">*</span></label>
+                        <select name="department" required>
+                            <option value="">Select Department</option>
+                            <option value="cs">Computer Science</option>
+                            <option value="it">Information Technology</option>
+                            <option value="ece">ECE</option>
+                            <option value="mechanical">Mechanical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Course Type <span class="required">*</span></label>
+                        <select name="courseType" required>
+                            <option value="">Select Type</option>
+                            <option value="theory">Theory</option>
+                            <option value="lab">Lab</option>
+                            <option value="theory-lab">Theory + Lab</option>
+                            <option value="elective">Elective</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Academic Details -->
+            <div class="form-section">
+                <h3>🎓 Academic Details</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Year <span class="required">*</span></label>
+                        <select name="year" required>
+                            <option value="">Select Year</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester <span class="required">*</span></label>
+                        <select name="semester" required>
+                            <option value="">Select Semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Credits <span class="required">*</span></label>
+                        <input type="number" name="credits" min="1" max="10" placeholder="e.g., 4" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Hours per Week <span class="required">*</span></label>
+                        <input type="number" name="hoursPerWeek" min="1" max="20" placeholder="e.g., 4" required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Description -->
+            <div class="form-section">
+                <h3>📝 Course Details</h3>
+                <div class="form-group">
+                    <label>Course Description</label>
+                    <textarea name="description" placeholder="Enter course description and objectives..."></textarea>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Prerequisites</label>
+                        <input type="text" name="prerequisites" placeholder="e.g., CS201, CS202">
+                    </div>
+                    <div class="form-group">
+                        <label>Max Students</label>
+                        <input type="number" name="maxStudents" placeholder="e.g., 120">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="admin-courses.html" class="btn btn-danger">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Save Course
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function handleSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+            
+            // API call to save course
+            console.log('Course data:', data);
+            alert('Course added successfully!');
+            window.location.href = 'admin-courses.html';
+        }
+    </script>
+</body>
+</html>
