@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Mentees - Faculty Portal</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* ...existing variables... */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-light: #f9f9f9;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --staff-primary: #3a0ca3;
+            --staff-secondary: #4361ee;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7ff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-body {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* ...existing animated background styles... */
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+        .staff-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+        }
+
+        .staff-avatar {
+            font-size: 28px;
+            background-color: #e6e1ff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .staff-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        .staff-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            color: var(--staff-primary);
+            font-size: 20px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: flex-end;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background-color: #ffeae9;
+            color: #d62828;
+        }
+
+        .logout-btn:hover {
+            background-color: #ffe0de;
+            transform: translateY(-1px);
+        }
+
+        .dashboard-icon {
+            font-size: 20px;
+            background-color: #e6e1ff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .dashboard-icon:hover {
+            background-color: #d6e4ff;
+            transform: scale(1.05);
+        }
+
+        /* Container */
+        .mentees-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            color: var(--staff-primary);
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            font-size: 36px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f2ff;
+            border-radius: 12px;
+        }
+
+        .stat-info h4 {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .stat-info .stat-number {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--staff-primary);
+            margin: 5px 0 0;
+        }
+
+        /* Search and Filter */
+        .controls-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+        }
+
+        /* Mentees Grid */
+        .mentees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .mentee-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .mentee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mentee-header {
+            background: linear-gradient(135deg, #f0f2ff, #e8eaf6);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .mentee-avatar-large {
+            width: 70px;
+            height: 70px;
+            background: #e6e1ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .mentee-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .mentee-basic-info h3 {
+            margin: 0;
+            color: var(--staff-primary);
+            font-size: 18px;
+        }
+
+        .mentee-id {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .mentee-body {
+            padding: 20px;
+        }
+
+        .performance-section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: var(--staff-primary);
+            margin-bottom: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .performance-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .performance-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .performance-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .performance-value.excellent {
+            color: var(--success);
+        }
+
+        .performance-value.good {
+            color: #3b82f6;
+        }
+
+        .performance-value.average {
+            color: var(--warning);
+        }
+
+        .performance-value.poor {
+            color: var(--danger);
+        }
+
+        /* Progress Bars */
+        .subject-progress {
+            margin-bottom: 12px;
+        }
+
+        .subject-name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-primary);
+        }
+
+        .progress-bar-container {
+            background: #e9ecef;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--staff-primary), var(--staff-secondary));
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        /* Attendance Badge */
+        .attendance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .attendance-badge.excellent {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .attendance-badge.good {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .attendance-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .attendance-badge.critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Action Buttons */
+        .mentee-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+
+        .btn-primary {
+            background: var(--staff-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--staff-secondary);
+        }
+
+        .btn-secondary {
+            background: #f0f2ff;
+            color: var(--staff-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e6ff;
+        }
+
+        /* Alert Section */
+        .alert-section {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .alert-section.critical {
+            background: #fee2e2;
+            border-left-color: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-logo {
+                position: static;
+                transform: none;
+            }
+
+            .mentees-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mentees-container {
+                padding: 20px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .mentees-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 20px;
+            }
+
+            .staff-info, .nav-logo, .nav-menu {
+                width: 100%;
+                justify-content: center;
+                min-width: auto;
+            }
+
+            .nav-logo {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="staff-info">
+                <div class="staff-avatar">👩‍🏫</div>
+                <div class="staff-details">
+                    <div class="staff-name">Prof. Faculty Name</div>
+                    <div class="staff-role">Faculty Member</div>
+                </div>
+            </div>
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Faculty Portal</span>
+            </div>
+            <div class="nav-menu">
+                <a href="staff-dashboard.html" class="dashboard-icon" title="Dashboard">📋</a>
+                <a href="staff-login.html" class="nav-link logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mentees-container">
+        <div class="page-header">
+            <h1 class="page-title">👥 My Mentees</h1>
+            <p class="page-subtitle">Monitor and guide your assigned students' academic performance</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon">👨‍🎓</div>
+                <div class="stat-info">
+                    <h4>Total Mentees</h4>
+                    <div class="stat-number">10</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <h4>Avg. CGPA</h4>
+                    <div class="stat-number">8.4</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h4>Avg. Attendance</h4>
+                    <div class="stat-number">87%</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-info">
+                    <h4>Need Attention</h4>
+                    <div class="stat-number">2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="controls-bar">
+            <input type="text" class="search-box" placeholder="Search by name or roll number..." id="searchInput">
+            <select class="filter-select" id="performanceFilter">
+                <option value="all">All Students</option>
+                <option value="excellent">Excellent Performers</option>
+                <option value="good">Good Performers</option>
+                <option value="needs-attention">Needs Attention</option>
+            </select>
+            <select class="filter-select" id="attendanceFilter">
+                <option value="all">All Attendance</option>
+                <option value="above-85">Above 85%</option>
+                <option value="75-85">75% - 85%</option>
+                <option value="below-75">Below 75%</option>
+            </select>
+        </div>
+
+        <!-- Mentees Grid -->
+        <div class="mentees-grid">
+            <!-- Mentee 1 - Excellent -->
+            <div class="mentee-card">
+                <div class="mentee-header">
+                    <div class="mentee-avatar-large">
+                        <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=667eea&color=fff&size=128" alt="Ravi Kumar">
+                    </div>
+                    <div class="mentee-basic-info">
+                        <h3>Ravi Kumar</h3>
+                        <div class="mentee-id">CSE2025001</div>
+                    </div>
+                </div>
+                <div class="mentee-body">
+                    <div class="performance-section">
+                        <div class="section-title">📊 Academic Performance</div>
+                        <div class="performance-grid">
+                            <div class="performance-item">
+                                <div class="performance-label">CGPA</div>
+                                <div class="performance-value excellent">9.2</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Attendance</div>
+                                <div class="performance-value excellent">92%</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Semester</div>
+                                <div class="performance-value good">5th</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Rank</div>
+                                <div class="performance-value excellent">#3</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-section">
+                        <div class="section-title">📚 Subject Performance</div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Web Technologies - 92%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 92%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">DAA - 88%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 88%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Operating Systems - 95%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 95%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mentee-actions">
+                        <button class="action-btn btn-primary" onclick="viewDetails('CSE2025001')">View Details</button>
+                        <button class="action-btn btn-secondary" onclick="scheduleMeeting('CSE2025001')">Schedule Meeting</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentee 2 - Good -->
+            <div class="mentee-card">
+                <div class="mentee-header">
+                    <div class="mentee-avatar-large">
+                        <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=ec407a&color=fff&size=128" alt="Priya Sharma">
+                    </div>
+                    <div class="mentee-basic-info">
+                        <h3>Priya Sharma</h3>
+                        <div class="mentee-id">CSE2025002</div>
+                    </div>
+                </div>
+                <div class="mentee-body">
+                    <div class="performance-section">
+                        <div class="section-title">📊 Academic Performance</div>
+                        <div class="performance-grid">
+                            <div class="performance-item">
+                                <div class="performance-label">CGPA</div>
+                                <div class="performance-value good">8.5</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Attendance</div>
+                                <div class="performance-value good">88%</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Semester</div>
+                                <div class="performance-value good">5th</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Rank</div>
+                                <div class="performance-value good">#12</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-section">
+                        <div class="section-title">📚 Subject Performance</div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Web Technologies - 85%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">DAA - 90%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Operating Systems - 82%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 82%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mentee-actions">
+                        <button class="action-btn btn-primary" onclick="viewDetails('CSE2025002')">View Details</button>
+                        <button class="action-btn btn-secondary" onclick="scheduleMeeting('CSE2025002')">Schedule Meeting</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mentee 3 - Needs Attention -->
+            <div class="mentee-card">
+                <div class="mentee-header">
+                    <div class="mentee-avatar-large">
+                        <img src="https://ui-avatars.com/api/?name=Amit+Patel&background=26c6da&color=fff&size=128" alt="Amit Patel">
+                    </div>
+                    <div class="mentee-basic-info">
+                        <h3>Amit Patel</h3>
+                        <div class="mentee-id">CSE2025003</div>
+                    </div>
+                </div>
+                <div class="mentee-body">
+                    <div class="alert-section critical">
+                        ⚠️ <strong>Attention Required:</strong> Low attendance (72%) and declining grades
+                    </div>
+
+                    <div class="performance-section">
+                        <div class="section-title">📊 Academic Performance</div>
+                        <div class="performance-grid">
+                            <div class="performance-item">
+                                <div class="performance-label">CGPA</div>
+                                <div class="performance-value average">7.2</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Attendance</div>
+                                <div class="performance-value poor">72%</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Semester</div>
+                                <div class="performance-value average">5th</div>
+                            </div>
+                            <div class="performance-item">
+                                <div class="performance-label">Rank</div>
+                                <div class="performance-value average">#28</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-section">
+                        <div class="section-title">📚 Subject Performance</div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Web Technologies - 68%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 68%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">DAA - 75%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="subject-progress">
+                            <div class="subject-name">Operating Systems - 70%</div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mentee-actions">
+                        <button class="action-btn btn-primary" onclick="viewDetails('CSE2025003')">View Details</button>
+                        <button class="action-btn btn-secondary" onclick="scheduleMeeting('CSE2025003')">Schedule Meeting</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More mentee cards... -->
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.mentee-card');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('.mentee-basic-info h3').textContent.toLowerCase();
+                const id = card.querySelector('.mentee-id').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || id.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter by performance
+        document.getElementById('performanceFilter').addEventListener('change', function(e) {
+            const filter = e.target.value;
+            const cards = document.querySelectorAll('.mentee-card');
+            
+            cards.forEach(card => {
+                const cgpa = parseFloat(card.querySelector('.performance-value').textContent);
+                let show = true;
+                
+                if (filter === 'excellent' && cgpa < 9.0) show = false;
+                if (filter === 'good' && (cgpa < 8.0 || cgpa >= 9.0)) show = false;
+                if (filter === 'needs-attention' && cgpa >= 8.0) show = false;
+                
+                card.style.display = show ? 'block' : 'none';
+            });
+        });
+
+        // View details
+        function viewDetails(studentId) {
+            alert(`Opening detailed performance report for ${studentId}\n(To be implemented with backend)`);
+            // Will navigate to detailed performance page
+        }
+
+        // Schedule meeting
+        function scheduleMeeting(studentId) {
+            alert(`Scheduling meeting with ${studentId}\n(To be implemented with backend)`);
+            // Will open meeting scheduler
+        }
+    </script>
+</body>
+</html>

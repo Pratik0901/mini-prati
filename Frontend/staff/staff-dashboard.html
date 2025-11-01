@@ -392,7 +392,20 @@
         
         .mentee-avatar, .student-icon {
             margin-right: 15px;
-            font-size: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e6e1ff;
+        }
+
+        .mentee-avatar img, .student-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .mentee-info, .student-detail {
@@ -900,7 +913,9 @@
                     </div>
                     <ul class="mentor-students">
                         <li class="student-item">
-                            <div class="student-icon">👨‍🎓</div>
+                            <div class="student-icon">
+                                <img src="https://ui-avatars.com/api/?name=Ravi+Kumar&background=667eea&color=fff&size=80" alt="Ravi Kumar">
+                            </div>
                             <div class="student-detail">
                                 <div class="student-name">Ravi Kumar</div>
                                 <div class="student-id">CSE2025001</div>
@@ -911,7 +926,9 @@
                             </div>
                         </li>
                         <li class="student-item">
-                            <div class="student-icon">👩‍🎓</div>
+                            <div class="student-icon">
+                                <img src="https://ui-avatars.com/api/?name=Priya+Sharma&background=ec407a&color=fff&size=80" alt="Priya Sharma">
+                            </div>
                             <div class="student-detail">
                                 <div class="student-name">Priya Sharma</div>
                                 <div class="student-id">CSE2025002</div>
@@ -922,7 +939,7 @@
                             </div>
                         </li>
                     </ul>
-                    <a href="mentorship.html" class="card-button">View All Mentees</a>
+                    <a href="staff-mentees.html" class="card-button">View All Mentees</a>
                 </div>
             </div>
         </div>
