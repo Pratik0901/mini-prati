@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject-wise Attendance - College ERP</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-light: #f9f9f9;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7ff;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: var(--bg-white);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .page-header h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            background-color: var(--bg-white);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .filter-controls select {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: var(--bg-white);
+            font-family: inherit;
+            font-size: 16px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .filter-controls select:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .filter-controls label {
+            font-weight: 600;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        
+        .filter-group {
+            margin: 0 15px;
+        }
+        
+        .semester-label {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .overall-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .stat-title {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stat-indicator {
+            width: 60px;
+            height: 6px;
+            border-radius: 5px;
+            margin: 10px auto 0;
+        }
+        
+        .good {
+            background-color: #4ade80;
+        }
+        
+        .warning {
+            background-color: #fbbf24;
+        }
+        
+        .danger {
+            background-color: #f87171;
+        }
+        
+        .subject-attendance-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .subject-card {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border-top: 5px solid var(--primary-color);
+        }
+        
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .subject-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 20px;
+        }
+        
+        .attendance-percentage {
+            font-size: 18px;
+            font-weight: 700;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .attendance-percentage.good {
+            background-color: #ecfdf5;
+            color: #10b981;
+        }
+        
+        .attendance-percentage.warning {
+            background-color: #fffbeb;
+            color: #d97706;
+        }
+        
+        .attendance-percentage.danger {
+            background-color: #fee2e2;
+            color: #ef4444;
+        }
+        
+        .attendance-details {
+            margin-bottom: 20px;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+        
+        .label {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+        
+        .value {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .attendance-bar {
+            height: 12px;
+            background-color: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            border-radius: 6px;
+            background-color: #4ade80;
+        }
+        
+        .progress.warning {
+            background-color: #fbbf24;
+        }
+        
+        .progress.danger {
+            background-color: #f87171;
+        }
+        
+        .attendance-warning {
+            background-color: #fef2f2;
+            color: #ef4444;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        
+        .warning-icon {
+            font-size: 20px;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .back-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .dashboard-icon {
+            font-size: 20px;
+            background-color: #e6efff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        
+        .dashboard-icon:hover {
+            background-color: #d6e4ff;
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .overall-stats {
+                flex-direction: column;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            
+            .subject-attendance-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="student-info">
+                <div class="student-avatar">👨‍🎓</div>
+                <div class="student-details">
+                    <!-- Student name removed -->
+                </div>
+            </div>
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Student Portal</span>
+            </div>
+            <div class="nav-menu">
+                <a href="student-dashboard.html" class="nav-link dashboard-icon" title="Dashboard">📋</a>
+                <a href="student-login.html" class="nav-link logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="student-dashboard.html" class="back-button">← Back to Dashboard</a>
+        
+        <div class="page-header">
+            <h1>Subject-wise Attendance</h1>
+            <p>View your attendance records for all enrolled courses</p>
+            <div class="semester-label">Current Semester: 2025</div>
+        </div>
+
+        <div class="filter-controls">
+            <div class="filter-group">
+                <label for="month">Select Month:</label>
+                <select id="month">
+                    <option>All Months</option>
+                    <option>July</option>
+                    <option>August</option>
+                    <option selected>September</option>
+                    <option>October</option>
+                    <option>November</option>
+                    <option>December</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="overall-stats">
+            <div class="stat-card">
+                <div class="stat-title">Overall Attendance</div>
+                <div class="stat-value">85%</div>
+                <div class="stat-indicator good"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Classes Present</div>
+                <div class="stat-value">112</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Total Classes Absent</div>
+                <div class="stat-value">19</div>
+            </div>
+        </div>
+
+        <div class="subject-attendance-list">
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>DBMS</h3>
+                    <span class="attendance-percentage good">92%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">23/25</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 15, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress" style="width: 92%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>DAA</h3>
+                    <span class="attendance-percentage good">88%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">22/25</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 14, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress" style="width: 88%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>SEPM</h3>
+                    <span class="attendance-percentage warning">78%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">18/23</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 12, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress warning" style="width: 78%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>RMK</h3>
+                    <span class="attendance-percentage good">95%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">19/20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 15, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress" style="width: 95%;"></div>
+                </div>
+            </div>
+
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>DAA Lab</h3>
+                    <span class="attendance-percentage danger">65%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">13/20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 10, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress danger" style="width: 65%;"></div>
+                </div>
+                <div class="attendance-warning">
+                    <span class="warning-icon">⚠️</span>
+                    <span>Attendance below minimum requirement (75%)</span>
+                </div>
+            </div>
+            
+            <div class="subject-card">
+                <div class="subject-header">
+                    <h3>DBMS Lab</h3>
+                    <span class="attendance-percentage good">85%</span>
+                </div>
+                <div class="attendance-details">
+                    <div class="detail-item">
+                        <span class="label">Classes Attended:</span>
+                        <span class="value">17/20</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Attended:</span>
+                        <span class="value">September 13, 2025</span>
+                    </div>
+                </div>
+                <div class="attendance-bar">
+                    <div class="progress" style="width: 85%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+

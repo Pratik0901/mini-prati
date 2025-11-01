@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - College ERP</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        .dashboard-icon {
+            font-size: 20px;
+            background-color: #e6efff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .dashboard-icon:hover {
+            background-color: #d6e4ff;
+            transform: scale(1.1);
+        }
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Notifications Page Styles */
+        .notifications-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .notifications-header h1 {
+            color: #4285f4;
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 5px;
+            border-radius: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .filter-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .filter-tab:hover:not(.active) {
+            background: #f0f0f0;
+        }
+
+        .notifications-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-badge {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stat-badge-icon {
+            font-size: 24px;
+        }
+
+        .stat-badge-content span {
+            display: block;
+        }
+
+        .stat-badge-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4285f4;
+        }
+
+        .stat-badge-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .notifications-list {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .notification-card {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-card:last-child {
+            border-bottom: none;
+        }
+
+        .notification-card:hover {
+            background: #f8f9fa;
+        }
+
+        .notification-card.unread {
+            background: #f0f7ff;
+            border-left: 4px solid #4285f4;
+        }
+
+        .notification-indicator {
+            display: flex;
+            align-items: flex-start;
+            padding-top: 5px;
+        }
+
+        .notification-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4285f4;
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.2);
+        }
+
+        .notification-dot.read {
+            background: #ddd;
+            box-shadow: none;
+        }
+
+        .notification-icon {
+            font-size: 36px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f7ff;
+            border-radius: 12px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .notification-from {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notification-message {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .notification-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 13px;
+            color: #999;
+        }
+
+        .notification-time {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .notification-category {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .notification-category.academic {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .notification-category.important {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .notification-category.event {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #999;
+        }
+
+        .load-more {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .load-more-btn {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .load-more-btn:hover {
+            background: #3367d6;
+            transform: translateY(-2px);
+        }
+
+        .mark-all-read {
+            background: #f0f0f0;
+            color: #666;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mark-all-read:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .notifications-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .notifications-stats {
+                flex-direction: column;
+            }
+
+            .notification-card {
+                flex-direction: column;
+            }
+
+            .filter-tabs {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .filter-tab {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="student-info">
+                <div class="student-avatar">👨‍🎓</div>
+                <div class="student-details">
+                    <!-- Student name removed -->
+                </div>
+            </div>
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Student Portal</span>
+            </div>
+            <div class="nav-menu">
+                <a href="student-dashboard.html" class="dashboard-icon" title="Dashboard">📋</a>
+                <a href="student-login.html" class="nav-link logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="notifications-container">
+        <div class="notifications-header">
+            <h1>📬 Notifications</h1>
+            <button class="mark-all-read" onclick="markAllAsRead()">Mark All as Read</button>
+        </div>
+
+        <div class="notifications-stats">
+            <div class="stat-badge">
+                <div class="stat-badge-icon">📨</div>
+                <div class="stat-badge-content">
+                    <span class="stat-badge-value" id="totalCount">12</span>
+                    <span class="stat-badge-label">Total</span>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-badge-icon">🔔</div>
+                <div class="stat-badge-content">
+                    <span class="stat-badge-value" id="unreadCount">5</span>
+                    <span class="stat-badge-label">Unread</span>
+                </div>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-badge-icon">⭐</div>
+                <div class="stat-badge-content">
+                    <span class="stat-badge-value" id="importantCount">3</span>
+                    <span class="stat-badge-label">Important</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all" onclick="filterNotifications('all')">All</button>
+            <button class="filter-tab" data-filter="unread" onclick="filterNotifications('unread')">Unread</button>
+            <button class="filter-tab" data-filter="academic" onclick="filterNotifications('academic')">Academic</button>
+            <button class="filter-tab" data-filter="important" onclick="filterNotifications('important')">Important</button>
+            <button class="filter-tab" data-filter="event" onclick="filterNotifications('event')">Events</button>
+        </div>
+
+        <div class="notifications-list" id="notificationsList">
+            <!-- Unread Notification 1 -->
+            <div class="notification-card unread" data-category="important" data-read="false">
+                <div class="notification-indicator">
+                    <div class="notification-dot"></div>
+                </div>
+                <div class="notification-icon">🚨</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Urgent: Exam Schedule Released</div>
+                            <div class="notification-from">👩‍🏫 From: Dr. Priya Sharma (CS Dept)</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as read" onclick="toggleRead(this)">✓</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Final semester examination schedule has been released. Please check your respective timetables and prepare accordingly. All exams will be conducted in offline mode.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 2 hours ago</span>
+                        <span class="notification-category important">Important</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unread Notification 2 -->
+            <div class="notification-card unread" data-category="academic" data-read="false">
+                <div class="notification-indicator">
+                    <div class="notification-dot"></div>
+                </div>
+                <div class="notification-icon">📚</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">New Study Material Uploaded</div>
+                            <div class="notification-from">👨‍🏫 From: Prof. Rajesh Kumar (DBMS)</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as read" onclick="toggleRead(this)">✓</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        DBMS Unit 4 lecture notes and practice questions have been uploaded. Please download from the study materials section before the upcoming test.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 5 hours ago</span>
+                        <span class="notification-category academic">Academic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unread Notification 3 -->
+            <div class="notification-card unread" data-category="important" data-read="false">
+                <div class="notification-indicator">
+                    <div class="notification-dot"></div>
+                </div>
+                <div class="notification-icon">💳</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Fee Payment Reminder</div>
+                            <div class="notification-from">💼 From: Accounts Department</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as read" onclick="toggleRead(this)">✓</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Your semester fee payment of ₹15,000 is pending. Last date for payment without late fee is 25th January 2024. Please clear your dues at the earliest.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 1 day ago</span>
+                        <span class="notification-category important">Important</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unread Notification 4 -->
+            <div class="notification-card unread" data-category="event" data-read="false">
+                <div class="notification-indicator">
+                    <div class="notification-dot"></div>
+                </div>
+                <div class="notification-icon">🎉</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Tech Fest 2024 Registration Open</div>
+                            <div class="notification-from">🎓 From: Student Activities Cell</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as read" onclick="toggleRead(this)">✓</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Annual Tech Fest registration is now open! Participate in coding competitions, project exhibitions, and technical workshops. Register before 20th January.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 1 day ago</span>
+                        <span class="notification-category event">Event</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unread Notification 5 -->
+            <div class="notification-card unread" data-category="academic" data-read="false">
+                <div class="notification-indicator">
+                    <div class="notification-dot"></div>
+                </div>
+                <div class="notification-icon">📊</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Mid-Semester Grades Published</div>
+                            <div class="notification-from">👨‍🏫 From: Examination Cell</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as read" onclick="toggleRead(this)">✓</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Mid-semester examination results are now available. Check your grades section for detailed marks. If you have any concerns, contact your respective faculty within 3 days.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 2 days ago</span>
+                        <span class="notification-category academic">Academic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Read Notification 1 -->
+            <div class="notification-card" data-category="general" data-read="true">
+                <div class="notification-indicator">
+                    <div class="notification-dot read"></div>
+                </div>
+                <div class="notification-icon">📅</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Class Rescheduled</div>
+                            <div class="notification-from">👩‍🏫 From: Prof. Anjali Verma (DAA)</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as unread" onclick="toggleRead(this)">↩️</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Tomorrow's DAA lab session has been rescheduled from 11:00 AM to 2:00 PM. Lab will be conducted in Lab 203 as usual.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 3 days ago</span>
+                        <span class="notification-category">General</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Read Notification 2 -->
+            <div class="notification-card" data-category="academic" data-read="true">
+                <div class="notification-indicator">
+                    <div class="notification-dot read"></div>
+                </div>
+                <div class="notification-icon">📖</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Assignment Deadline Extended</div>
+                            <div class="notification-from">👨‍🏫 From: Dr. Ramesh Patel (OS)</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as unread" onclick="toggleRead(this)">↩️</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Due to technical issues, the deadline for OS Assignment 2 has been extended to 18th January. Make sure to submit before the new deadline.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 4 days ago</span>
+                        <span class="notification-category academic">Academic</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Read Notification 3 -->
+            <div class="notification-card" data-category="event" data-read="true">
+                <div class="notification-indicator">
+                    <div class="notification-dot read"></div>
+                </div>
+                <div class="notification-icon">🏆</div>
+                <div class="notification-content">
+                    <div class="notification-header">
+                        <div>
+                            <div class="notification-title">Hackathon Winners Announced</div>
+                            <div class="notification-from">🎓 From: Coding Club</div>
+                        </div>
+                        <div class="notification-actions">
+                            <button class="action-btn" title="Mark as unread" onclick="toggleRead(this)">↩️</button>
+                            <button class="action-btn" title="Delete" onclick="deleteNotification(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="notification-message">
+                        Congratulations to all participants! The winning projects of the Annual Hackathon have been announced. Check the notice board for complete results.
+                    </div>
+                    <div class="notification-meta">
+                        <span class="notification-time">🕒 5 days ago</span>
+                        <span class="notification-category event">Event</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="load-more">
+            <button class="load-more-btn" onclick="loadMoreNotifications()">Load More Notifications</button>
+        </div>
+    </div>
+
+    <script>
+        // Filter notifications by category
+        function filterNotifications(filter) {
+            const cards = document.querySelectorAll('.notification-card');
+            const tabs = document.querySelectorAll('.filter-tab');
+            
+            // Update active tab
+            tabs.forEach(tab => {
+                if (tab.dataset.filter === filter) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Filter cards
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'flex';
+                } else if (filter === 'unread') {
+                    card.style.display = card.dataset.read === 'false' ? 'flex' : 'none';
+                } else {
+                    card.style.display = card.dataset.category === filter ? 'flex' : 'none';
+                }
+            });
+        }
+
+        // Toggle read/unread status
+        function toggleRead(button) {
+            const card = button.closest('.notification-card');
+            const dot = card.querySelector('.notification-dot');
+            const isUnread = card.classList.contains('unread');
+            
+            if (isUnread) {
+                card.classList.remove('unread');
+                dot.classList.add('read');
+                card.dataset.read = 'true';
+                button.innerHTML = '↩️';
+                button.title = 'Mark as unread';
+                updateUnreadCount(-1);
+            } else {
+                card.classList.add('unread');
+                dot.classList.remove('read');
+                card.dataset.read = 'false';
+                button.innerHTML = '✓';
+                button.title = 'Mark as read';
+                updateUnreadCount(1);
+            }
+        }
+
+        // Delete notification
+        function deleteNotification(button) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                const card = button.closest('.notification-card');
+                const isUnread = card.classList.contains('unread');
+                
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(-100%)';
+                
+                setTimeout(() => {
+                    card.remove();
+                    updateTotalCount(-1);
+                    if (isUnread) {
+                        updateUnreadCount(-1);
+                    }
+                    checkEmptyState();
+                }, 300);
+            }
+        }
+
+        // Mark all as read
+        function markAllAsRead() {
+            const unreadCards = document.querySelectorAll('.notification-card.unread');
+            
+            unreadCards.forEach(card => {
+                card.classList.remove('unread');
+                card.querySelector('.notification-dot').classList.add('read');
+                card.dataset.read = 'true';
+                const readBtn = card.querySelector('.action-btn[title="Mark as read"]');
+                if (readBtn) {
+                    readBtn.innerHTML = '↩️';
+                    readBtn.title = 'Mark as unread';
+                }
+            });
+            
+            document.getElementById('unreadCount').textContent = '0';
+        }
+
+        // Update unread count
+        function updateUnreadCount(change) {
+            const countElement = document.getElementById('unreadCount');
+            let currentCount = parseInt(countElement.textContent);
+            currentCount += change;
+            countElement.textContent = Math.max(0, currentCount);
+        }
+
+        // Update total count
+        function updateTotalCount(change) {
+            const countElement = document.getElementById('totalCount');
+            let currentCount = parseInt(countElement.textContent);
+            currentCount += change;
+            countElement.textContent = Math.max(0, currentCount);
+        }
+
+        // Check if notifications list is empty
+        function checkEmptyState() {
+            const list = document.getElementById('notificationsList');
+            const cards = list.querySelectorAll('.notification-card');
+            
+            if (cards.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <h3>No Notifications</h3>
+                        <p>You're all caught up! Check back later for new updates.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Load more notifications (placeholder)
+        function loadMoreNotifications() {
+            alert('Loading more notifications... (This feature will load older notifications)');
+        }
+
+        // Add click event to notification cards for detail view
+        document.querySelectorAll('.notification-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Prevent click when clicking action buttons
+                if (!e.target.closest('.action-btn')) {
+                    // You can add modal or detail view here
+                    console.log('Notification clicked');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

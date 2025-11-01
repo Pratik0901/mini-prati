@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - College ERP</title>
+    <link rel="stylesheet" href="../styles.css">
+    <style>
+        /* Color variables */
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --bg-light: #f9f9f9;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --staff-primary: #3a0ca3;
+            --staff-secondary: #4361ee;
+        }
+        
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7ff;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dashboard-body {
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Animation background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .floating-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+        
+        .shape-1 {
+            width: 120px;
+            height: 120px;
+            background-color: var(--staff-primary);
+            top: 20%;
+            left: 10%;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .shape-2 {
+            width: 80px;
+            height: 80px;
+            background-color: var(--staff-secondary);
+            top: 60%;
+            left: 80%;
+            animation: float 18s infinite ease-in-out reverse;
+        }
+        
+        .shape-3 {
+            width: 160px;
+            height: 160px;
+            background-color: var(--accent-color);
+            top: 70%;
+            left: 30%;
+            animation: float 20s infinite ease-in-out;
+        }
+        
+        .shape-4 {
+            width: 100px;
+            height: 100px;
+            background-color: var(--staff-primary);
+            top: 15%;
+            left: 70%;
+            animation: float 22s infinite ease-in-out reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translate(30px, -30px) rotate(5deg) scale(1.05);
+            }
+            50% {
+                transform: translate(15px, 40px) rotate(10deg) scale(1.1);
+            }
+            75% {
+                transform: translate(-30px, 20px) rotate(-5deg) scale(0.95);
+            }
+        }
+        
+        /* Navigation bar */
+        .navbar {
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .staff-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .staff-avatar {
+            font-size: 24px;
+            background-color: #e6e1ff;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .staff-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .staff-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .staff-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--staff-primary);
+            font-size: 18px;
+        }
+        
+        .logo-icon {
+            font-size: 24px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-primary);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: var(--transition);
+        }
+        
+        .logout-btn {
+            background-color: #ffeae9;
+            color: #d62828;
+        }
+        
+        .logout-btn:hover {
+            background-color: #ffe0de;
+        }
+        
+        .dashboard-icon {
+            font-size: 20px;
+            background-color: #e6e1ff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .dashboard-icon:hover {
+            background-color: #d6e4ff;
+            transform: scale(1.1);
+        }
+        
+        /* Dashboard container */
+        .dashboard-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 30px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .welcome-title {
+            color: var(--staff-primary);
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .welcome-subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+        }
+        
+        /* Dashboard grid and cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        .dashboard-card {
+            background-color: var(--bg-white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: var(--transition);
+            height: 100%;
+            border-top: 3px solid var(--staff-primary);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .card-header {
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: #f8f7ff;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-icon {
+            font-size: 24px;
+            background-color: rgba(58, 12, 163, 0.15);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--staff-primary);
+            font-weight: 600;
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card-content p {
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        /* Card buttons */
+        .card-button {
+            display: block;
+            text-align: center;
+            padding: 12px 20px;
+            background-color: var(--staff-primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            margin-top: 15px;
+        }
+        
+        .card-button:hover {
+            background-color: var(--staff-secondary);
+            transform: translateY(-2px);
+        }
+        
+        .card-button.secondary {
+            background-color: #eeeaff;
+            color: var(--staff-primary);
+            margin-top: 10px;
+        }
+        
+        .card-button.secondary:hover {
+            background-color: #e0e6ff;
+        }
+        
+        /* Statistics container */
+        .stats-container, .stats-summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .stat-item, .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--staff-primary);
+            background: linear-gradient(135deg, #3a0ca3, #4361ee);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        /* Mentee styles */
+        .mentees-list, .mentor-students {
+            margin: 15px 0;
+            list-style: none;
+            padding: 0;
+        }
+        
+        .mentee-item, .student-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #f8f7ff;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .mentee-item:hover, .student-item:hover {
+            background-color: #f0f2ff;
+            transform: translateX(5px);
+        }
+        
+        .mentee-avatar, .student-icon {
+            margin-right: 15px;
+            font-size: 18px;
+        }
+        
+        .mentee-info, .student-detail {
+            flex-grow: 1;
+        }
+        
+        .mentee-name, .student-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--staff-primary);
+        }
+        
+        .mentee-id, .student-id {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .action-btn {
+            color: var(--staff-primary);
+            text-decoration: none;
+            font-size: 22px;
+            margin-left: 10px;
+            transition: var(--transition);
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .quick-actions .action-btn {
+            margin: 0;
+            font-size: 18px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+        
+        /* Notification styles */
+        .notification-section {
+            margin-bottom: 15px;
+        }
+
+        .notification-section h4 {
+            margin-top: 0;
+            color: var(--staff-primary);
+            font-size: 16px;
+        }
+        
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+        
+        .notification-item:hover {
+            background-color: #f8f7ff;
+            padding-left: 10px;
+            border-radius: 8px;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #ccc;
+            border-radius: 50%;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .notification-dot.new {
+            background-color: var(--staff-primary);
+            box-shadow: 0 0 0 3px rgba(58, 12, 163, 0.2);
+        }
+        
+        /* Class timetable styles */
+        .timetable-today {
+            margin-top: 15px;
+        }
+        
+        .class-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .class-item:last-child {
+            border-bottom: none;
+        }
+        
+        .class-time, .timetable-time {
+            background-color: var(--staff-primary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .class-details, .timetable-details, .class-info {
+            flex-grow: 1;
+        }
+        
+        .class-subject, .timetable-subject {
+            font-weight: 600;
+            display: block;
+            color: var(--staff-primary);
+        }
+        
+        .class-room, .timetable-class, .timetable-room {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .class-info h4 {
+            margin: 0;
+            color: var(--staff-primary);
+        }
+        
+        .class-info p {
+            margin: 5px 0 0;
+            font-size: 13px;
+        }
+        
+        .class-date, .class-list {
+            margin: 15px 0;
+            text-align: right;
+        }
+        
+        .timetable-details h4 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--staff-primary);
+        }
+        
+        .timetable-details p {
+            margin: 3px 0 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .timetable-item {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .timetable-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 15px;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Material upload styles */
+        .material-upload {
+            background-color: #f8f7ff;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .material-upload:hover {
+            border-color: var(--staff-primary);
+            background-color: #f0f2ff;
+        }
+        
+        .upload-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .upload-icon {
+            font-size: 24px;
+        }
+        
+        .upload-text {
+            font-weight: 500;
+            color: var(--staff-primary);
+        }
+        
+        /* Flash message styles */
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
+        .alert-error {
+            background-color: #ffe6e6;
+            color: #d63031;
+        }
+        
+        .alert-success {
+            background-color: #e6ffe6;
+            color: #27ae60;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .staff-info, .nav-logo, .nav-menu {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="dashboard-body">
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="staff-info">
+                <div class="staff-avatar">👩‍🏫</div>
+                <div class="staff-details">
+                    
+                </div>
+            </div>
+            <div class="nav-logo">
+                <span class="logo-icon">🎓</span>
+                <span class="logo-text">Faculty Portal</span>
+            </div>
+            <div class="nav-menu">
+                <a href="staff-dashboard.html" class="nav-link dashboard-icon" title="Dashboard">📋</a>
+                <a href="staff-login.html" class="nav-link logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="welcome-title">Welcome</h1>
+            <p class="welcome-subtitle">Manage your classes and student activities</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Attendance Management Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <h3>Attendance Management</h3>
+                </div>
+                <div class="card-content">
+                    <p>Mark and monitor student attendance for your classes</p>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-value">5</span>
+                            <span class="stat-label">Classes Today</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">85%</span>
+                            <span class="stat-label">Avg. Attendance</span>
+                        </div>
+                    </div>
+                    <a href="attendance-management.html" class="card-button">Mark Attendance</a>
+                    <a href="attendance-report.html" class="card-button secondary">View Reports</a>
+                </div>
+            </div>
+
+            <!-- Grade Management Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <h3>Grade Management</h3>
+                </div>
+                <div class="card-content">
+                    <p>Enter and review student grades for your courses</p>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">Pending Evaluations</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">7.9</span>
+                            <span class="stat-label">Avg. CGPA</span>
+                        </div>
+                    </div>
+                    <a href="grade-entry.html" class="card-button">Enter Grades</a>
+                    <a href="grade-analysis.html" class="card-button secondary">View Analysis</a>
+                </div>
+            </div>
+
+            <!-- Combined Notifications Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🔔</div>
+                    <h3>Notifications</h3>
+                </div>
+                <div class="card-content">
+                    <p>View and send notifications to students</p>
+                    
+                    <!-- Incoming Notifications Section -->
+                    <div class="notification-section">
+                        <h4>Recent Notifications</h4>
+                        <div class="notification-item">
+                            <span class="notification-dot new"></span>
+                            <p>New grade submission request for DAA course</p>
+                        </div>
+                        <div class="notification-item">
+                            <span class="notification-dot"></span>
+                            <p>Faculty meeting scheduled for tomorrow at 3 PM</p>
+                        </div>
+                        <div class="notification-item">
+                            <span class="notification-dot"></span>
+                            <p>Complete attendance verification by Friday</p>
+                        </div>
+                        <a href="notifications.html" class="card-button secondary">View All</a>
+                    </div>
+                    
+                    <!-- Send Notification Section -->
+                    <div class="notification-section" style="margin-top: 15px;">
+                        <h4>Send Notification</h4>
+                        <form class="notification-form">
+                            <div class="form-group">
+                                <select id="recipientGroup" class="form-control">
+                                    <option value="">Select Recipients...</option>
+                                    <option>DBMS Class (CS301)</option>
+                                    <option>DAA Class (CS302)</option>
+                                    <option>My Mentees</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="notificationMessage" rows="2" class="form-control" placeholder="Type your notification message here..."></textarea>
+                            </div>
+                            <button type="submit" class="card-button">Send Notification</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Materials Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📚</div>
+                    <h3>Study Materials</h3>
+                </div>
+                <div class="card-content">
+                    <p>Upload and manage course materials for students</p>
+                    <div class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-value">15</span>
+                            <span class="stat-label">Uploaded Files</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">320</span>
+                            <span class="stat-label">Total Downloads</span>
+                        </div>
+                    </div>
+                    <div class="material-upload">
+                        <label class="upload-btn">
+                            <span class="upload-icon">📤</span>
+                            <span class="upload-text">Click to upload file</span>
+                            <input type="file" hidden>
+                        </label>
+                    </div>
+                    <div class="form-group" style="margin-top: 10px;">
+                        <select id="materialCourse" class="form-control">
+                            <option value="">Select Course...</option>
+                            <option>DBMS (CS301)</option>
+                            <option>DAA (CS302)</option>
+                            <option>SEPM (CS303)</option>
+                        </select>
+                    </div>
+                    <button type="button" class="card-button" style="margin-top: 10px;">Upload Material</button>
+                    <a href="manage-materials.html" class="card-button secondary">Manage Existing</a>
+                </div>
+            </div>
+
+            <!-- Class Timetable Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">⏰</div>
+                    <h3>Class Timetable</h3>
+                </div>
+                <div class="card-content">
+                    <p>View your teaching schedule and upcoming classes</p>
+                    <div class="timetable-today">
+                        <div class="class-item">
+                            <div class="class-time">09:00 AM</div>
+                            <div class="class-details">
+                                <span class="class-subject">DBMS (CS301)</span>
+                                <span class="class-room">Room 101</span>
+                            </div>
+                        </div>
+                        <div class="class-item">
+                            <div class="class-time">11:00 AM</div>
+                            <div class="class-details">
+                                <span class="class-subject">DAA Lab (CS306)</span>
+                                <span class="class-room">Lab 203</span>
+                            </div>
+                        </div>
+                        <div class="class-item">
+                            <div class="class-time">02:00 PM</div>
+                            <div class="class-details">
+                                <span class="class-subject">DBMS Lab (CS305)</span>
+                                <span class="class-room">Lab 202</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="timetable.html" class="card-button">Full Timetable</a>
+                </div>
+            </div>
+            
+            <!-- Grade Entry Card -->
+            
+            <!-- Student Mentorship Card -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">👥</div>
+                    <h3>Student Mentorship</h3>
+                </div>
+                <div class="card-content">
+                    <p>Monitor and guide your assigned mentees</p>
+                    <div class="stats-summary">
+                        <div class="stat">
+                            <span class="stat-value">10</span>
+                            <span class="stat-label">Mentees</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">2</span>
+                            <span class="stat-label">Meetings Today</span>
+                        </div>
+                    </div>
+                    <ul class="mentor-students">
+                        <li class="student-item">
+                            <div class="student-icon">👨‍🎓</div>
+                            <div class="student-detail">
+                                <div class="student-name">Ravi Kumar</div>
+                                <div class="student-id">CSE2025001</div>
+                            </div>
+                            <div class="quick-actions">
+                                <button class="action-btn">📊</button>
+                                <button class="action-btn">📝</button>
+                            </div>
+                        </li>
+                        <li class="student-item">
+                            <div class="student-icon">👩‍🎓</div>
+                            <div class="student-detail">
+                                <div class="student-name">Priya Sharma</div>
+                                <div class="student-id">CSE2025002</div>
+                            </div>
+                            <div class="quick-actions">
+                                <button class="action-btn">📊</button>
+                                <button class="action-btn">📝</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <a href="mentorship.html" class="card-button">View All Mentees</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

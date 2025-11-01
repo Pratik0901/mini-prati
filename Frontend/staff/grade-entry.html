@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Entry - College ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #10b981;
+            --danger-color: #d62828;
+            --bg-light: #f5f7ff;
+            --bg-white: #ffffff;
+            --text-dark: #222;
+            --text-light: #666;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1300px;
+            margin: auto;
+            padding: 12px 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-icon {
+            background: #eef2ff;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .dashboard-icon:hover {
+            transform: scale(1.1);
+            background: #dbe4ff;
+        }
+
+        .logout-btn {
+            background: #ffe5e5;
+            color: var(--danger-color);
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .logout-btn:hover {
+            background: #ffd6d6;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--bg-white);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            border-left: 6px solid var(--primary-color);
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            margin: 0;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--text-light);
+            margin-top: 6px;
+            font-size: 15px;
+        }
+
+        /* Back Button */
+        .back-button {
+            display: inline-block;
+            text-decoration: none;
+            background: var(--secondary-color);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 15px;
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Grade Controls */
+        .grade-controls {
+            background: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            padding: 18px;
+            border-radius: var(--radius);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: space-between;
+            border-left: 5px solid var(--accent-color);
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-group label {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        select,
+        input[type="date"] {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f8f9ff;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        select:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        /* Summary Section */
+        .grade-info {
+            background: linear-gradient(135deg, #f7f8ff, #eef2ff);
+            display: flex;
+            justify-content: space-around;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .grade-detail {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px;
+        }
+
+        .detail-label {
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        /* Assessment Tabs */
+        .assessment-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background-color: var(--bg-white);
+            padding: 8px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow-x: auto;
+        }
+
+        .assessment-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .assessment-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Table */
+        .grades-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .grades-table th {
+            background: #eef2ff;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .grades-table tr:hover {
+            background: #f9f9ff;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: #e6e1ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Form inputs */
+        .grade-input {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        .grade-select {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        /* Buttons */
+        .action-button {
+            padding: 10px 20px;
+            background: var(--secondary-color);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .action-button:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .form-buttons .draft-btn {
+            background: var(--accent-color);
+        }
+
+        .form-buttons .submit-btn {
+            background: linear-gradient(135deg, var(--success-color), #34d399);
+        }
+
+        .form-buttons .submit-btn:hover {
+            background: linear-gradient(135deg, #059669, var(--success-color));
+        }
+
+        @media (max-width: 768px) {
+            .grade-controls {
+                flex-direction: column;
+            }
+
+            .grade-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .assessment-tabs {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🎓 College ERP</div>
+            <div class="nav-menu">
+                <a href="staff-dashboard.html" class="dashboard-icon" title="Dashboard">📋</a>
+                <a href="staff-login.html" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <a href="staff-dashboard.html" class="back-button">← Back to Dashboard</a>
+
+        <div class="page-header">
+            <h1>Grade Entry</h1>
+            <p>Enter and submit student grades for your courses</p>
+        </div>
+
+        <div class="grade-controls">
+            <div class="control-group">
+                <label for="course">Course:</label>
+                <select id="course" name="course">
+                    <option value="dbms">DBMS (CS301)</option>
+                    <option value="daa">DAA (CS302)</option>
+                    <option value="sepm">SEPM (CS303)</option>
+                    <option value="dbms-lab">DBMS Lab (CS305)</option>
+                    <option value="daa-lab">DAA Lab (CS306)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="batch">Batch:</label>
+                <select id="batch" name="batch">
+                    <option value="cs21">CS 2021 Batch</option>
+                    <option value="cs22">CS 2022 Batch</option>
+                    <option value="it21">IT 2021 Batch</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <button class="action-button">Load Students</button>
+            </div>
+        </div>
+
+        <div class="grade-info">
+            <div class="grade-detail">
+                <span class="detail-label">Course</span>
+                <div class="detail-value">DBMS (CS301)</div>
+            </div>
+            <div class="grade-detail">
+                <span class="detail-label">Batch</span>
+                <div class="detail-value">CS 2021 Batch</div>
+            </div>
+            <div class="grade-detail">
+                <span class="detail-label">Total Students</span>
+                <div class="detail-value">35</div>
+            </div>
+            <div class="grade-detail">
+                <span class="detail-label">Semester</span>
+                <div class="detail-value">5th Semester</div>
+            </div>
+        </div>
+
+        <div class="assessment-tabs">
+            <div class="assessment-tab active">Mid-Term Exam (30%)</div>
+            <div class="assessment-tab">End-Term Exam (50%)</div>
+            <div class="assessment-tab">Assignments (10%)</div>
+            <div class="assessment-tab">Class Participation (10%)</div>
+            <div class="assessment-tab">Final Grade</div>
+        </div>
+
+        <form>
+            <table class="grades-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll Number</th>
+                        <th>Marks (Out of 30)</th>
+                        <th>Grade</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar">👨‍🎓</div>
+                                <div>Likith KM</div>
+                            </div>
+                        </td>
+                        <td>1NH23CS001</td>
+                        <td>
+                            <input type="number" class="grade-input" min="0" max="30" value="25">
+                        </td>
+                        <td>
+                            <select class="grade-select">
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                                <option>D</option>
+                                <option>F</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" placeholder="Add remarks (optional)"
+                                style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar">👩‍🎓</div>
+                                <div>M Ziyad</div>
+                            </div>
+                        </td>
+                        <td>1NH232CS002</td>
+                        <td>
+                            <input type="number" class="grade-input" min="0" max="30" value="28">
+                        </td>
+                        <td>
+                            <select class="grade-select">
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                                <option>D</option>
+                                <option>F</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" placeholder="Add remarks (optional)"
+                                style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar">👨‍🎓</div>
+                                <div>Prateek</div>
+                            </div>
+                        </td>
+                        <td>1NH23CS003</td>
+                        <td>
+                            <input type="number" class="grade-input" min="0" max="30" value="21">
+                        </td>
+                        <td>
+                            <select class="grade-select">
+                                <option>A</option>
+                                <option>B</option>
+                                <option selected>C</option>
+                                <option>D</option>
+                                <option>F</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" placeholder="Add remarks (optional)"
+                                style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-buttons">
+                <button type="button" class="action-button draft-btn">Save as Draft</button>
+                <button type="submit" class="action-button submit-btn">Submit Grades</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

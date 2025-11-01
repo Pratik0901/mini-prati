@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login - College ERP</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="login-body">
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+            <div class="shape shape-6"></div>
+        </div>
+    </div>
+    
+    <div class="login-container">
+        <a href="../index.html" class="back-button">← Back to Home</a>
+        
+        <div class="login-form-wrapper student-theme">
+            <div class="login-header">
+                <div class="login-icon">👨‍🎓</div>
+                <h2>Student Login</h2>
+                <p>Student Portal Access</p>
+            </div>
+            
+            <form class="login-form" method="POST" action="student-dashboard.html">
+                <div class="input-group">
+                    <input type="text" id="studentId" name="student_id" required>
+                    <label for="studentId">Student ID</label>
+                    <span class="input-border"></span>
+                </div>
+                
+                <div class="input-group">
+                    <input type="password" id="studentPassword" name="password" required>
+                    <label for="studentPassword">Password</label>
+                    <span class="input-border"></span>
+                </div>
+                
+                <button type="submit" class="login-btn student-btn">
+                    Login
+                </button>
+                
+                <div class="form-footer">
+                    <a href="#" class="forgot-link">Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+     
+</body>
+</html>

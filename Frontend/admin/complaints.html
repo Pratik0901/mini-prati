@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints Management | College ERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --dark-bg: #1c1c1c;
+            --darker-bg: #111;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --hover-bg: rgba(255, 255, 255, 0.15);
+            --border-radius: 15px;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        /* ===== Global Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            grid-template-columns: var(--sidebar-width) 1fr;
+            grid-template-rows: var(--header-height) 1fr;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== Top Navbar ===== */
+        .top-navbar {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--darker-bg);
+            padding: 0 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .logo {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Notifications styling */
+        .notifications {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--danger-color);
+            color: #fff;
+            font-size: 0.7em;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        /* CSS-only dropdown for profile */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--darker-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            width: 180px;
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown:hover .dropdown-content,
+        .dropdown-content:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        .dropdown-content a:hover {
+            background: var(--primary-color);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--darker-bg);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            transition: var(--transition);
+            box-shadow: inset -5px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.3em;
+            color: var(--primary-color);
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        /* CSS-only menu dropdowns */
+        .sidebar-menu li {
+            position: relative;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu li.active > a,
+        .sidebar-menu li a:hover {
+            background: var(--primary-color);
+        }
+
+        .sidebar-menu .arrow {
+            margin-left: auto;
+            transition: transform 0.3s;
+        }
+
+        .dropdown-menu {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            transition: max-height 0.3s ease;
+        }
+
+        /* Use CSS to handle dropdown states */
+        .dropdown {
+            cursor: pointer;
+        }
+
+        .dropdown:hover .dropdown-menu,
+        .dropdown:focus-within .dropdown-menu {
+            max-height: 200px;
+        }
+
+        .dropdown:hover .arrow,
+        .dropdown:focus-within .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu li a {
+            padding-left: 40px;
+            font-size: 0.9em;
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            grid-area: main;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .content-header p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+        }
+
+        .filter-group select, 
+        .filter-group input {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+            color: white;
+        }
+
+        .filter-buttons {
+            margin-left: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .apply-filter {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .apply-filter:hover {
+            background: #2980b9;
+        }
+
+        .reset-filter {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .reset-filter:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Complaints Table */
+        .complaints-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+
+        .complaints-table th, 
+        .complaints-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .complaints-table th {
+            background: rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+
+        .complaints-table tr:hover {
+            background: var(--hover-bg);
+        }
+
+        .complaints-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .new {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+        }
+
+        .in-progress {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f1c40f;
+        }
+
+        .resolved {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .high {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .medium {
+            background: rgba(230, 126, 34, 0.2);
+            color: #e67e22;
+        }
+
+        .low {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        /* Action buttons */
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .view-btn {
+            background: var(--primary-color);
+        }
+
+        .view-btn:hover {
+            background: #2980b9;
+        }
+
+        .respond-btn {
+            background: var(--secondary-color);
+        }
+
+        .respond-btn:hover {
+            background: #27ae60;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .page-item {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card-bg);
+            border-radius: 8px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .page-item.active,
+        .page-item:hover {
+            background: var(--primary-color);
+        }
+
+        /* Complaint detail modal */
+        .complaint-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .complaint-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--dark-bg);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--box-shadow);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .complaint-details {
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .complaint-message {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .response-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .response-form textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.2);
+            color: white;
+            min-height: 150px;
+            margin-bottom: 15px;
+            resize: vertical;
+        }
+
+        .status-update {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .submit-response {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .submit-response:hover {
+            background: #2980b9;
+        }
+
+        /* Mobile responsive design using pure CSS */
+        #menu-toggle-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 0 1fr;
+            }
+            
+            #menu-toggle-input:checked ~ body {
+                grid-template-columns: var(--sidebar-width) 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                transition: left 0.3s ease;
+                z-index: 99;
+            }
+
+            #menu-toggle-input:checked ~ .sidebar {
+                left: 0;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .filter-buttons {
+                margin-left: 0;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .complaints-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden checkbox for toggling sidebar on mobile -->
+    <input type="checkbox" id="menu-toggle-input">
+
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <label for="menu-toggle-input" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </label>
+            <a href="#" class="logo">College ERP</a>
+        </div>
+        <div class="navbar-right">
+            <div class="notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+            </div>
+            <a href="admin-login.html" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <div class="profile-dropdown">
+                <img src="https://via.placeholder.com/40" alt="Admin" class="profile-img">
+                <div class="dropdown-content">
+                    <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="admin-login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">Admin Panel</div>
+        <ul class="sidebar-menu">
+            <li><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-book"></i> Manage Courses <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="courses.html">View Courses</a></li>
+                    <li><a href="add-course.html">Add Course</a></li>
+                </ul>
+            </li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-users"></i> Manage Users <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="faculty.html">Faculty</a></li>
+                    <li><a href="students.html">Students</a></li>
+                </ul>
+            </li>
+            
+            <li><a href="timetable.html"><i class="fas fa-calendar"></i> View Timetable</a></li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-clipboard-check"></i> Attendance <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="mark-attendance.html">Mark Attendance</a></li>
+                    <li><a href="attendance-reports.html">View Reports</a></li>
+                </ul>
+            </li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-chart-line"></i> Marks <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="enter-marks.html">Enter Marks</a></li>
+                    <li><a href="view-marks.html">View Marks</a></li>
+                </ul>
+            </li>
+            
+            <li><a href="notifications.html"><i class="fas fa-paper-plane"></i> Send Notifications</a></li>
+            <li class="active"><a href="complaints.html"><i class="fas fa-exclamation-triangle"></i> Complaints</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>Complaints Management</h1>
+            <p>View and respond to complaints from students and staff.</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label for="filter-source">Source:</label>
+                <select id="filter-source">
+                    <option value="all">All</option>
+                    <option value="student">Student</option>
+                    <option value="staff">Staff</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-status">Status:</label>
+                <select id="filter-status">
+                    <option value="all">All</option>
+                    <option value="new">New</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-priority">Priority:</label>
+                <select id="filter-priority">
+                    <option value="all">All</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-department">Department:</label>
+                <select id="filter-department">
+                    <option value="all">All</option>
+                    <option value="cs">Computer Science</option>
+                    <option value="it">Information Technology</option>
+                    <option value="ee">Electrical Engineering</option>
+                    <option value="me">Mechanical Engineering</option>
+                    <option value="civil">Civil Engineering</option>
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn apply-filter">Apply Filters</button>
+                <button class="filter-btn reset-filter">Reset</button>
+            </div>
+        </div>
+
+        <!-- Complaints Table -->
+        <table class="complaints-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Subject</th>
+                    <th>Source</th>
+                    <th>Department</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CP00123</td>
+                    <td>Computer Lab Access Issues</td>
+                    <td>Student</td>
+                    <td>Computer Science</td>
+                    <td>08/05/2023</td>
+                    <td><span class="status-badge new">New</span></td>
+                    <td><span class="priority-badge high">High</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00123')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn respond-btn">
+                                <i class="fas fa-reply"></i> Respond
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>CP00122</td>
+                    <td>Request for Additional Resources</td>
+                    <td>Staff</td>
+                    <td>Information Technology</td>
+                    <td>07/05/2023</td>
+                    <td><span class="status-badge in-progress">In Progress</span></td>
+                    <td><span class="priority-badge medium">Medium</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00122')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn respond-btn">
+                                <i class="fas fa-reply"></i> Respond
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>CP00121</td>
+                    <td>Library Access Hours Extension</td>
+                    <td>Student</td>
+                    <td>Mechanical Engineering</td>
+                    <td>05/05/2023</td>
+                    <td><span class="status-badge resolved">Resolved</span></td>
+                    <td><span class="priority-badge low">Low</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00121')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>CP00120</td>
+                    <td>Broken Equipment in Lab 304</td>
+                    <td>Staff</td>
+                    <td>Electrical Engineering</td>
+                    <td>04/05/2023</td>
+                    <td><span class="status-badge in-progress">In Progress</span></td>
+                    <td><span class="priority-badge high">High</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00120')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn respond-btn">
+                                <i class="fas fa-reply"></i> Respond
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>CP00119</td>
+                    <td>WiFi Connectivity Issues in Hostel</td>
+                    <td>Student</td>
+                    <td>Civil Engineering</td>
+                    <td>03/05/2023</td>
+                    <td><span class="status-badge resolved">Resolved</span></td>
+                    <td><span class="priority-badge medium">Medium</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00119')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>CP00118</td>
+                    <td>Classroom Projector Not Working</td>
+                    <td>Staff</td>
+                    <td>Computer Science</td>
+                    <td>01/05/2023</td>
+                    <td><span class="status-badge new">New</span></td>
+                    <td><span class="priority-badge high">High</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn view-btn" onclick="openModal('CP00118')">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button class="action-btn respond-btn">
+                                <i class="fas fa-reply"></i> Respond
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <div class="page-item"><i class="fas fa-chevron-left"></i></div>
+            <div class="page-item active">1</div>
+            <div class="page-item">2</div>
+            <div class="page-item">3</div>
+            <div class="page-item">4</div>
+            <div class="page-item"><i class="fas fa-chevron-right"></i></div>
+        </div>
+
+        <!-- Complaint Detail Modal -->
+        <div class="complaint-modal" id="complaint-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Complaint Details</h2>
+                    <button class="close-modal" onclick="closeModal()"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="complaint-details">
+                        <div class="detail-row">
+                            <div class="detail-label">Complaint ID:</div>
+                            <div class="detail-value" id="complaint-id">CP00123</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Subject:</div>
+                            <div class="detail-value" id="complaint-subject">Computer Lab Access Issues</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Submitted By:</div>
+                            <div class="detail-value" id="complaint-submitter">John Doe (Student, CS-2025)</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Department:</div>
+                            <div class="detail-value" id="complaint-department">Computer Science</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Date Submitted:</div>
+                            <div class="detail-value" id="complaint-date">08/05/2023</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Status:</div>
+                            <div class="detail-value" id="complaint-status"><span class="status-badge new">New</span></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Priority:</div>
+                            <div class="detail-value" id="complaint-priority"><span class="priority-badge high">High</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="complaint-message" id="complaint-message">
+                        <p>I'm having issues accessing the computer lab in the CS building. The lab attendant says my ID doesn't have the proper permissions, even though I'm enrolled in CS401 which requires lab work. I've been trying to resolve this for three days but haven't received any help. This is affecting my coursework as I have an assignment due next week.</p>
+                    </div>
+                    
+                    <div class="response-section">
+                        <h3>Response</h3>
+                        <div class="response-form">
+                            <div class="status-update">
+                                <label for="status-select">Update Status:</label>
+                                <select id="status-select">
+                                    <option value="new">New</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                </select>
+                            </div>
+                            <textarea placeholder="Type your response here..."></textarea>
+                            <button class="submit-response">Submit Response</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Simple JavaScript for modal functionality
+        function openModal(complaintId) {
+            document.getElementById('complaint-modal').classList.add('active');
+            // In a real application, you would fetch the complaint details using the ID
+            // and populate the modal with the retrieved data
+            document.getElementById('complaint-id').textContent = complaintId;
+        }
+        
+        function closeModal() {
+            document.getElementById('complaint-modal').classList.remove('active');
+        }
+        
+        // Close modal when clicking outside of it
+        document.getElementById('complaint-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

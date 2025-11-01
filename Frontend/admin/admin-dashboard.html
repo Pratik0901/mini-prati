@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | College ERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --dark-bg: #1c1c1c;
+            --darker-bg: #111;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --hover-bg: rgba(255, 255, 255, 0.15);
+            --border-radius: 15px;
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        /* ===== Global Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            grid-template-columns: var(--sidebar-width) 1fr;
+            grid-template-rows: var(--header-height) 1fr;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== Top Navbar ===== */
+        .top-navbar {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--darker-bg);
+            padding: 0 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .logo {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Notifications styling */
+        .notifications {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--danger-color);
+            color: #fff;
+            font-size: 0.7em;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        /* CSS-only dropdown for profile */
+        .profile-dropdown {
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--darker-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            width: 180px;
+            box-shadow: var(--box-shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition);
+        }
+
+        .profile-dropdown:hover .dropdown-content,
+        .dropdown-content:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        .dropdown-content a:hover {
+            background: var(--primary-color);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            grid-area: sidebar;
+            background: var(--darker-bg);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            transition: var(--transition);
+            box-shadow: inset -5px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.3em;
+            color: var(--primary-color);
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        /* CSS-only menu dropdowns */
+        .sidebar-menu li {
+            position: relative;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            color: #fff;
+            transition: var(--transition);
+        }
+
+        .sidebar-menu li.active > a,
+        .sidebar-menu li a:hover {
+            background: var(--primary-color);
+        }
+
+        .sidebar-menu .arrow {
+            margin-left: auto;
+            transition: transform 0.3s;
+        }
+
+        .dropdown-menu {
+            list-style: none;
+            max-height: 0;
+            overflow: hidden;
+            background: rgba(0,0,0,0.2);
+            transition: max-height 0.3s ease;
+        }
+
+        /* Use CSS to handle dropdown states */
+        .dropdown {
+            cursor: pointer;
+        }
+
+        .dropdown:hover .dropdown-menu,
+        .dropdown:focus-within .dropdown-menu {
+            max-height: 200px; /* Arbitrary value that's higher than the content height */
+        }
+
+        .dropdown:hover .arrow,
+        .dropdown:focus-within .arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu li a {
+            padding-left: 40px;
+            font-size: 0.9em;
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            grid-area: main;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .content-header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .content-header p {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        /* ===== Stats Grid ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: var(--hover-bg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.8em;
+        }
+
+        .blue { color: var(--primary-color); background: rgba(52, 152, 219, 0.2); }
+        .green { color: var(--secondary-color); background: rgba(46, 204, 113, 0.2); }
+        .orange { color: var(--warning-color); background: rgba(230, 126, 34, 0.2); }
+        .red { color: var(--danger-color); background: rgba(231, 76, 60, 0.2); }
+
+        .stat-info h3 { 
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .stat-info p { 
+            opacity: 0.8;
+            font-size: 1em;
+        }
+
+        /* ===== Dashboard Cards ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--box-shadow);
+        }
+
+        .dashboard-card h3 {
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            transition: var(--transition);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .action-btn i {
+            font-size: 1.5em;
+            color: var(--primary-color);
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .action-btn:hover i {
+            color: white;
+        }
+
+        /* Activity List */
+        .activity-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        
+        .activity-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            padding: 15px; 
+            border-radius: 10px; 
+            background: rgba(255,255,255,0.05);
+            transition: var(--transition);
+        }
+
+        .activity-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .activity-icon { 
+            width: 40px; 
+            height: 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 10px; 
+        }
+        
+        .activity-content p { 
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .activity-content span, 
+        .activity-content time { 
+            font-size: 0.85em; 
+            opacity: 0.8; 
+        }
+
+        /* Mobile responsive design using pure CSS */
+        #menu-toggle-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                grid-template-columns: 0 1fr;
+            }
+            
+            #menu-toggle-input:checked ~ body {
+                grid-template-columns: var(--sidebar-width) 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: -100%;
+                transition: left 0.3s ease;
+                z-index: 99;
+            }
+
+            #menu-toggle-input:checked ~ .sidebar {
+                left: 0;
+            }
+
+            .stats-grid,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hidden checkbox for toggling sidebar on mobile -->
+    <input type="checkbox" id="menu-toggle-input">
+
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <label for="menu-toggle-input" class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </label>
+            <a href="#" class="logo">College ERP</a>
+        </div>
+        <div class="navbar-right">
+            <div class="notifications">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+            </div>
+            <a href="admin-login.html" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <div class="profile-dropdown">
+                <img src="https://via.placeholder.com/40" alt="Admin" class="profile-img">
+                <div class="dropdown-content">
+                    <a href="#"><i class="fas fa-user"></i> Profile</a>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="admin-login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">Admin Panel</div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-book"></i> Manage Courses <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="courses.html">View Courses</a></li>
+                    <li><a href="add-course.html">Add Course</a></li>
+                </ul>
+            </li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-users"></i> Manage Users <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="faculty.html">Faculty</a></li>
+                    <li><a href="students.html">Students</a></li>
+                </ul>
+            </li>
+            
+            <li><a href="timetable.html"><i class="fas fa-calendar"></i> View Timetable</a></li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-clipboard-check"></i> Attendance <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="mark-attendance.html">Mark Attendance</a></li>
+                    <li><a href="attendance-reports.html">View Reports</a></li>
+                </ul>
+            </li>
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-chart-line"></i> Marks <i class="fas fa-chevron-down arrow"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="enter-marks.html">Enter Marks</a></li>
+                    <li><a href="view-marks.html">View Marks</a></li>
+                </ul>
+            </li>
+            
+            <li><a href="notifications.html"><i class="fas fa-paper-plane"></i> Send Notifications</a></li>
+            <li><a href="complaints.html"><i class="fas fa-exclamation-triangle"></i> Complaints</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>Dashboard Overview</h1>
+            <p>Welcome back, Admin! Here's what's happening today.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-graduation-cap"></i></div>
+                <div class="stat-info"><h3>1,245</h3><p>Total Students</p></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="stat-info"><h3>87</h3><p>Faculty Members</p></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-book"></i></div>
+                <div class="stat-info"><h3>42</h3><p>Courses</p></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-info"><h3>7</h3><p>Pending Complaints</p></div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <a href="add-student.html" class="action-btn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Add Student</span>
+                    </a>
+                    <a href="add-faculty.html" class="action-btn">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Add Faculty</span>
+                    </a>
+                    <a href="add-course.html" class="action-btn">
+                        <i class="fas fa-book-medical"></i>
+                        <span>Add Course</span>
+                    </a>
+                    <a href="schedule.html" class="action-btn">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span>Schedule Class</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Recent Activities</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                      
+                    <div class="activity-item">
+                        <div class="activity-icon green"><i class="fas fa-file-alt"></i></div>
+                        <div class="activity-content">
+                            <p>Mark sheet generated</p>
+                            <span>CS-2025 Batch</span> • <time>2 hours ago</time>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon red"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="activity-content">
+                            <p>New complaint filed</p>
+                            <span>From IT Department</span> • <time>3 hours ago</time>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
