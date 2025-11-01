@@ -30,13 +30,14 @@
             color: var(--text-dark);
         }
 
-        /* Navbar */
+        /* Updated Navbar */
         .navbar {
             background: var(--bg-white);
             box-shadow: var(--shadow-sm);
             position: sticky;
             top: 0;
             z-index: 10;
+            padding: 15px 0;
         }
 
         .nav-container {
@@ -45,53 +46,102 @@
             align-items: center;
             max-width: 1300px;
             margin: auto;
-            padding: 12px 20px;
+            padding: 0 30px;
+        }
+
+        .staff-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 200px;
+        }
+
+        .staff-avatar {
+            font-size: 28px;
+            background-color: #e6e1ff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .staff-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 15px;
+        }
+
+        .staff-role {
+            font-size: 13px;
+            color: var(--text-light);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             font-weight: 700;
-            font-size: 20px;
             color: var(--primary-color);
+            font-size: 20px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo-icon {
+            font-size: 28px;
         }
 
         .nav-menu {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            min-width: 200px;
+            justify-content: flex-end;
         }
 
         .dashboard-icon {
             background: #eef2ff;
             border-radius: 50%;
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .dashboard-icon:hover {
-            transform: scale(1.1);
+            transform: scale(1.05);
             background: #dbe4ff;
         }
 
         .logout-btn {
             background: #ffe5e5;
             color: var(--danger-color);
-            padding: 8px 18px;
-            border-radius: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
             text-decoration: none;
             font-weight: 500;
+            font-size: 14px;
             transition: var(--transition);
         }
 
         .logout-btn:hover {
             background: #ffd6d6;
+            transform: translateY(-1px);
         }
 
         /* Container */
@@ -328,7 +378,17 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">🎓 College ERP</div>
+            <div class="staff-info">
+                <div class="staff-avatar">👩‍🏫</div>
+                <div class="staff-details">
+                    <div class="staff-name">Prof. Faculty Name</div>
+                    <div class="staff-role">Faculty Member</div>
+                </div>
+            </div>
+            <div class="logo">
+                <span class="logo-icon">🎓</span>
+                <span>Faculty Portal</span>
+            </div>
             <div class="nav-menu">
                 <a href="staff-dashboard.html" class="dashboard-icon" title="Dashboard">📋</a>
                 <a href="staff-login.html" class="logout-btn">Logout</a>
