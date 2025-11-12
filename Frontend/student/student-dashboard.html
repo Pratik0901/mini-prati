@@ -224,9 +224,40 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(2, 1fr); /* 2 columns -> 3 rows for current 6 cards */
+            grid-auto-rows: auto;
             gap: 20px;
             width: 100%;
+        }
+
+        /* Smaller screens: single column */
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                padding: 0 20px;
+            }
+            
+            .student-info, .nav-logo, .nav-menu {
+                width: 100%;
+                justify-content: center;
+                min-width: auto;
+            }
+            
+            .nav-logo {
+                order: -1;
+            }
+        }
+
+        /* Very wide screens: allow 3 columns if available */
+        @media (min-width: 1400px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .dashboard-card {
